@@ -30,6 +30,18 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Clean previous artifacts
+        run: |
+          # Delete any leftover github-pages artifacts from previous runs
+          ARTIFACT_IDS=$(gh api repos/${{ github.repository }}/actions/artifacts \
+            --jq '.artifacts[] | select(.name=="github-pages") | .id' 2>/dev/null || true)
+          for id in $ARTIFACT_IDS; do
+            echo "Deleting artifact $id"
+            gh api -X DELETE repos/${{ github.repository }}/actions/artifacts/$id || true
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
