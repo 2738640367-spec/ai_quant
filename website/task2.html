@@ -57,21 +57,16 @@ body {
   padding: 14px 20px; border-bottom: 1px solid #f0f0f0;
   font-size: 15px; font-weight: 600; color: #1a1a2e;
   display: flex; align-items: center; justify-content: space-between;
-  cursor: pointer;
 }
 .card-header-left { display: flex; align-items: center; gap: 8px; }
 .card-header .dot { width: 8px; height: 8px; border-radius: 50%; }
-.card-header .toggle { font-size: 12px; color: #999; transition: transform 0.2s; }
-.card-header .toggle.open { transform: rotate(90deg); }
+.card-header .toggle { display: none; }
 .formula-section {
-  padding: 0 20px;
-  max-height: 0; overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.4s ease;
+  padding: 14px 20px;
   background: #fafbfc;
   border-bottom: 1px solid #f0f0f0;
   font-size: 13px; line-height: 1.8; color: #555;
 }
-.formula-section.open { max-height: 600px; padding: 14px 20px; }
 .formula-section h4 { color: #1a1a2e; font-size: 14px; margin: 8px 0 4px; }
 .formula-section .formula-box {
   background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
@@ -112,7 +107,7 @@ body {
 <div class="container">
   <!-- Section: Descriptive Statistics -->
   <div class="card full-width">
-    <div class="card-header" onclick="toggleFormula(this)">
+    <div class="card-header">
       <div class="card-header-left"><span class="dot" style="background:#4472C4"></span>一、数据描述性统计</div>
       <span class="toggle">▶</span>
     </div>
@@ -131,9 +126,8 @@ body {
   <div class="stats-row">
     <!-- Chart 1: OHLC Box Plot -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#4472C4"></span>图1 OHLC 价格分布箱线图</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>图表说明</h4>
@@ -144,9 +138,8 @@ body {
 
     <!-- Chart 2: Daily Return Distribution -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#FF8C00"></span>图2 日收益率分布直方图</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>图表说明</h4>
@@ -162,9 +155,8 @@ body {
   <div class="grid">
     <!-- Chart 3: RSI -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#DC143C"></span>图3 RSI 相对强弱指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -188,9 +180,8 @@ body {
 
     <!-- Chart 3: MACD -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#1E90FF"></span>图4 MACD 指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -215,9 +206,8 @@ body {
 
     <!-- Chart 4: BOLL -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#228B22"></span>图5 布林带 BOLL 指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -241,9 +231,8 @@ body {
 
     <!-- Chart 5: KDJ -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#1E90FF"></span>图6 KDJ 随机指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -266,9 +255,8 @@ body {
 
     <!-- Chart 6: ATR -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#FF8C00"></span>图7 ATR 平均真实波幅</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -293,9 +281,8 @@ body {
 
     <!-- Chart 7: WR -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#8B008B"></span>图8 WR 威廉指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -317,9 +304,8 @@ body {
 
     <!-- Chart 8: OBV -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#8B008B"></span>图9 OBV 能量潮指标</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -341,9 +327,8 @@ body {
 
     <!-- Chart 10: Rolling Sharpe Ratio -->
     <div class="card">
-      <div class="card-header" onclick="toggleFormula(this)">
+      <div class="card-header">
         <div class="card-header-left"><span class="dot" style="background:#17A2B8"></span>图10 滚动夏普比率</div>
-        <span class="toggle">▶</span>
       </div>
       <div class="formula-section">
         <h4>定义</h4>
@@ -431,21 +416,6 @@ function parseData(raw) {
 }
 
 let stockData = parseData(EMBEDDED_DATA);
-
-// ============================================================
-// Toggle formula section
-// ============================================================
-function toggleFormula(headerEl) {
-  const section = headerEl.nextElementSibling;
-  const toggle = headerEl.querySelector('.toggle');
-  if (section.classList.contains('open')) {
-    section.classList.remove('open');
-    toggle.classList.remove('open');
-  } else {
-    section.classList.add('open');
-    toggle.classList.add('open');
-  }
-}
 
 // ============================================================
 // Statistics Table
