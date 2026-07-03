@@ -216,6 +216,9 @@
     </span>
     <span style="font-size:14px;opacity:0.7">截至 2026-07-02</span>
   </div>
+  <div style="margin-top:12px">
+    <a href="task2.html" style="display:inline-block;background:rgba(255,255,255,0.2);color:white;padding:6px 18px;border-radius:20px;text-decoration:none;font-size:13px;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">→ TASK2 技术指标分析面板</a>
+  </div>
 </div>
 
 <div class="stats-grid">
@@ -340,6 +343,20 @@
     • 近一年日均成交额约 ¥571 亿，总成交 ¥138,238 亿。2026-01-29 单日成交额高达 ¥2,631 亿，对应当日 +8.61% 暴涨<br>
     • 成交额高峰通常出现在价格剧烈波动时（大涨或大跌），低成交额往往对应横盘整理期<br>
     • 近期成交额有所萎缩，日均降至 ¥400-500 亿水平，显示市场观望情绪浓厚，等待方向性选择
+  </div>
+</div>
+
+<!-- 图7: 每日收益率分布 -->
+<div class="chart-container">
+  <h2>图7 ｜ 每日收益率（涨跌幅）分布图</h2>
+  <div id="chart-pct-dist" class="chart-small"></div>
+  <div style="margin-top:15px;padding:15px;background:#f6f8fa;border-radius:8px;font-size:13px;color:#555;line-height:1.8;">
+    <strong>📈 图表解读：</strong><br>
+    • 每日涨跌幅分布直方图直观展示了贵州茅台近一年股价日收益率（涨跌幅百分比）的频率分布，反映波动特性与风险水平<br>
+    • 分布呈现近似正态形态，峰值集中在 0% 附近（-0.5% ~ +0.5% 区间），说明大部分交易日涨跌幅较小，股价波动相对温和<br>
+    • 正值（红色）和负值（绿色）柱体大致对称，但左侧（负收益）尾部略厚，右侧（正收益）存在少量极端值（如 +8.61% 的暴涨日），呈现轻微负偏态<br>
+    • 叠加的正态分布拟合曲线（蓝色虚线）显示实际分布与理论正态分布存在一定偏离，"尖峰厚尾"特征暗示极端行情出现的概率高于正态预期<br>
+    • 投资启示：茅台日收益率整体波动可控，但需警惕偶发的极端涨跌行情；从风险控制角度，止损位不宜设置过窄
   </div>
 </div>
 
@@ -1082,6 +1099,72 @@ amountChart.setOption({
   }]
 });
 
+// ============ 每日涨跌幅分布 ============
+var pctChgValues = volData.map(function(d) { return d.pct_chg; });
+// 构建直方图
+var binCount = 30;
+var pctMin = Math.min.apply(null, pctChgValues);
+var pctMax = Math.max.apply(null, pctChgValues);
+var binWidth = (pctMax - pctMin) / binCount;
+var bins = [];
+var binEdges = [];
+for (var i = 0; i < binCount; i++) {
+  bins.push(0);
+  binEdges.push(parseFloat((pctMin + i * binWidth).toFixed(2)));
+}
+binEdges.push(parseFloat(pctMax.toFixed(2)));
+pctChgValues.forEach(function(v) {
+  var idx = Math.min(Math.floor((v - pctMin) / binWidth), binCount - 1);
+  bins[idx]++;
+});
+// 计算均值和标准差用于叠加正态曲线
+var sum = pctChgValues.reduce(function(a, b) { return a + b; }, 0);
+var mean = sum / pctChgValues.length;
+var sqDiff = pctChgValues.reduce(function(a, b) { return a + (b - mean) * (b - mean); }, 0);
+var std = Math.sqrt(sqDiff / pctChgValues.length);
+// 正态曲线点
+var normalCurve = [];
+var xRange = Math.max(Math.abs(pctMin), Math.abs(pctMax)) * 1.2;
+var nPoints = 100;
+for (var j = 0; j <= nPoints; j++) {
+  var x = -xRange + 2 * xRange * j / nPoints;
+  var y = (1 / (std * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / std, 2));
+  // 缩放到与柱状图匹配
+  normalCurve.push([x, y * binWidth * pctChgValues.length]);
+}
+
+var pctDistChart = echarts.init(document.getElementById('chart-pct-dist'));
+pctDistChart.setOption({
+  backgroundColor: '#fff',
+  title: { text: '均值: ' + mean.toFixed(2) + '%  |  标准差: ' + std.toFixed(2) + '%  |  样本数: ' + pctChgValues.length, textStyle: { fontSize: 12, color: '#999' }, left: 'center', top: 5 },
+  tooltip: { trigger: 'axis' },
+  grid: { left: '8%', right: '4%', top: '15%', bottom: '10%' },
+  xAxis: { type: 'value', name: '涨跌幅(%)', nameLocation: 'center', nameGap: 30, axisLabel: { formatter: '{value}%' } },
+  yAxis: { name: '交易日数', nameLocation: 'center', nameGap: 40 },
+  series: [
+    {
+      name: '涨跌幅分布',
+      type: 'bar',
+      data: binEdges.slice(0, -1).map(function(edge, i) {
+        return {
+          value: [parseFloat((edge + binWidth / 2).toFixed(2)), bins[i]],
+          itemStyle: { color: edge + binWidth / 2 >= 0 ? '#ff4d4f' : '#52c41a', borderColor: 'transparent' }
+        };
+      }),
+      barWidth: '99%'
+    },
+    {
+      name: '正态拟合',
+      type: 'line',
+      data: normalCurve,
+      smooth: true,
+      showSymbol: false,
+      lineStyle: { color: '#1890ff', type: 'dashed', width: 2 },
+      z: 10
+    }
+  ]
+});
+
 // 响应式
 window.addEventListener('resize', function() {
   klineChart.resize();
@@ -1090,6 +1173,7 @@ window.addEventListener('resize', function() {
   rsiChart.resize();
   bollChart.resize();
   amountChart.resize();
+  pctDistChart.resize();
 });
 </script>
 
